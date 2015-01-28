@@ -1,0 +1,31 @@
+application: open-whisper-cla
+version: 1
+runtime: java
+threadsafe: true
+
+inbound_services:
+- warmup
+
+handlers:
+- url: /admin/*
+  login: admin
+
+- url: /cla-server/form
+  servlet: org.whispersystems.claserver.SignupServlet
+  name: cla
+  secure: always
+
+- url: /cla-server/validate
+  servlet: org.whispersystems.claserver.PullRequestValidationServlet
+  name: validate
+  secure: always
+
+- url: /cla-server/oauth
+  servlet: org.whispersystems.claserver.OauthCallbackServlet
+  name: oauth
+  secure: always
+
+- url: /remote_api
+  servlet: com.google.apphosting.utils.remoteapi.RemoteApiServlet
+  name: remote
+  secure: always
