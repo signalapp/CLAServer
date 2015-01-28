@@ -1,0 +1,22 @@
+<tr>
+  <td width="200px">
+    {{#label}}
+      <label for="{{labelFor}}">{{label}}
+        {{#req}} <span style="color:#a94442">*</span>{{/req}}
+      </label>
+    {{/label}}
+    {{^label}}
+      <div >&nbsp;</div>
+    {{/label}}
+  </td>
+  {{#inputs}}
+    <td {{^twoCol}}colspan=2{{/twoCol}}>
+      {{#html}}
+        {{{html}}}
+      {{/html}}
+      {{^html}}
+        <input size={{#twoCol}}"20"{{/twoCol}}{{^twoCol}}"40"{{/twoCol}} name="{{name}}" type="text" placeholder="{{placeholder}}">
+      {{/html}}
+      <div class="error-msg" style="font-size: 80%; color: #a94442; display: none;" id="error_{{name}}">This field is required</div>
+  {{/inputs}}
+</tr>

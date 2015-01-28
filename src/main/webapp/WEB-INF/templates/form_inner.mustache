@@ -1,0 +1,72 @@
+<div style="padding: 20px">
+  <div id="error-container" style="padding: 20px 0; display: none;">
+    <div style="color: #a94442; background-color: #f2dede; border: 1px solid #ebccd1; padding: 10px;">
+      Please correct the highlighted errors.
+    </div>
+  </div>
+  <form id="user_form" method="POST" onsubmit="return false;">
+    <table>
+      {{#items}}
+        {{>form_row}}
+      {{/items}}
+    </table>
+
+    <div style="padding: 20px 0">
+      <input class="button-primary" type="submit" value="Submit">
+      <span id="loading" style="color: #999; padding: 0 10px; display: none;">Loading...</span>
+    </div>
+  </form>
+</div>
+<script>
+  $('#user_form').on('submit', function() {
+    var params = $(this).serializeArray();
+    var data = {};
+    for (var i = 0; i < params.length; i++) {
+      var param = params[i];
+      data[param["name"]] = param["value"] ? param["value"] : "";
+    }
+    var redirectUrl = getQueryVariable("redirect_url");
+    var url = "{{baseUrl}}/form";
+    if (redirectUrl) url = url + "?redirect_url=" + redirectUrl;
+    var locked = false;
+    if (!locked) {
+      $('#loading').show();
+      $.ajax({
+        type: "POST",
+        url: url,
+        data: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        'dataType': 'json',
+        success: function(html) {
+          locked = true;
+          if (html.status == 'ERROR') {
+            $('#loading').hide();
+            var fields = html.errorFields;
+            $('.error-msg').hide();
+            for (var i = 0; i < fields.length; i++) {
+              $('#error_' + fields[i]).show();
+            }
+            $('#error-container').show();
+          } else {
+            window.location = html.authorizeUrl;
+          }
+        }
+      });
+    }
+    return false;
+  });
+
+  function getQueryVariable(variable) {
+    var query = window.location.search.substring(1);
+    var vars = query.split("&");
+    for (var i = 0; i < vars.length; i++) {
+      var pair = vars[i].split("=");
+      if (pair[0] == variable) {
+        return pair[1];
+      }
+    }
+    return false;
+  }
+</script>
