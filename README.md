@@ -25,3 +25,10 @@ There are a few keys that need to be set in the database.  They can be set using
 Rendering the form
 --------------------
 There is a class called RenderForm.java that can be used to generate the static html for the main site.
+
+License
+---------------------
+
+Copyright 2013 Open Whisper Systems
+
+Licensed under the AGPLv3: https://www.gnu.org/licenses/agpl-3.0.html
