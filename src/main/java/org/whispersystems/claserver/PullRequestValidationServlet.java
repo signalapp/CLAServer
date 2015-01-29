@@ -47,7 +47,7 @@ public class PullRequestValidationServlet extends HttpServlet {
     } else {
       return new GithubCreateStatus(
               "failure",
-              "Need to sign the Contributor License Agreement",
+              "Please sign the Contributor License Agreement",
               "cla-server/validation",
               url);
     }
