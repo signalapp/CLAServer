@@ -30,7 +30,7 @@ public class UrlFetcher<T> {
     OutputStream outputStream = connection.getOutputStream();
     mapper.writeValue(outputStream, data);
     outputStream.close();
-    logger.fine(String.format("Status update response: %s", connection.getResponseCode()));
+    logger.info(String.format("Status update response: %s", connection.getResponseCode()));
     return CharStreams.readLines(new InputStreamReader(connection.getInputStream())).get(0);
   }
 
@@ -42,7 +42,7 @@ public class UrlFetcher<T> {
     for (Map.Entry<String, String> header : headers.entrySet()) {
       connection.setRequestProperty(header.getKey(), header.getValue());
     }
-    logger.fine(String.format("Status update response: %s", connection.getResponseCode()));
+    logger.info(String.format("Status update response: %s", connection.getResponseCode()));
     return mapper.readValue(mapper.getJsonFactory().createJsonParser(connection.getInputStream()), clazz);
   }
 }

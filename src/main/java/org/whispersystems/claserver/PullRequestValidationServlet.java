@@ -70,7 +70,7 @@ public class PullRequestValidationServlet extends HttpServlet {
       if (MessageDigest.isEqual(hmac.getBytes(), xHubSig.getBytes())) {
         updateStatus(config, event.pull_request);
       } else {
-        logger.fine("Invalid request signature");
+        logger.warning("Invalid request signature");
       }
     } catch (NoSuchAlgorithmException | InvalidKeyException e) {
       e.printStackTrace();
