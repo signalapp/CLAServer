@@ -1,0 +1,8 @@
+{
+  "github-webhook-secret": "",
+  "github-user-token": "",
+  "github-oauth-client-id": "",
+  "github-oauth-client-secret": "",
+  "base-url": "http://localhost:8082/cla-server",
+  "whispersystems-url": "http://127.0.0.1:4000"
+}
