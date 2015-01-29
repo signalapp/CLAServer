@@ -33,6 +33,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * This servlet handles the response after the user has properly authenticated with github.  If successful, it
+ * updates the user entity with the access token and github user.
+ *
+ * @author Tina Huang
+ */
 public class OauthCallbackServlet extends HttpServlet {
   private DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
   private Config config = Config.getInstance();

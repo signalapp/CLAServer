@@ -43,6 +43,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
+/**
+ * This class validates if the owner of a pull request has signed the CLA and updates the github status accordingly.
+ *
+ * @author Tina Huang
+ */
 public class PullRequestValidationServlet extends HttpServlet {
   private DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
   private Logger logger = Logger.getLogger(SignupServlet.class.getName());
@@ -66,6 +71,9 @@ public class PullRequestValidationServlet extends HttpServlet {
     }
   }
 
+  /**
+   * This is the endpoint for the github webhook
+   */
   protected void doPost(HttpServletRequest request, HttpServletResponse resp) throws ServletException, IOException {
     String xHubSig = request.getHeader("X-Hub-Signature");
     StringWriter writer = new StringWriter();
@@ -109,6 +117,10 @@ public class PullRequestValidationServlet extends HttpServlet {
     return headers;
   }
 
+  /**
+   * This is the destination for the details link for a pull request that has failed the CLA check.  When
+   * clicked, it checks if the user has since signed the CLA, and if not, it redirects the user to the CLA.
+   */
   protected void doGet(HttpServletRequest request, HttpServletResponse resp) throws ServletException, IOException {
     String url = request.getParameter("redirect_url");
     Map<String, String> headers = getAuthorization(config);

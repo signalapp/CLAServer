@@ -45,6 +45,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * This servlet handles serving the CLA form (though in the WhisperSystems deploy, that form is inlined in the
+ * static site and this servlet handles the ajax post).  When the form is submitted, the server stores the user
+ * information, but it is invalid until the user has properly authorized against github and the username has been
+ * stored.
+ *
+ * @author Tina Huang
+ */
 public class SignupServlet extends HttpServlet {
   MustacheFactory mf = new DefaultMustacheFactory(new File("WEB-INF/templates"));
   Mustache mustache = mf.compile("form.mustache");
@@ -108,6 +116,9 @@ public class SignupServlet extends HttpServlet {
     return errorFields;
   }
 
+  /**
+   * Serves up a standalone version of the CLA form.
+   */
   protected void doGet(HttpServletRequest request, HttpServletResponse resp) throws ServletException, IOException {
     resp.setContentType("text/html");
     mustache.execute(resp.getWriter(), AuthFormController.createEmptyFormController(mf)).flush();
