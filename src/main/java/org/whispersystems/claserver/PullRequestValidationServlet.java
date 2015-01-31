@@ -75,6 +75,8 @@ public class PullRequestValidationServlet extends HttpServlet {
    * This is the endpoint for the github webhook
    */
   protected void doPost(HttpServletRequest request, HttpServletResponse resp) throws ServletException, IOException {
+    String eventType = request.getHeader("X-GitHub-Event");
+    if (eventType.equals("ping")) return;
     String xHubSig = request.getHeader("X-Hub-Signature");
     StringWriter writer = new StringWriter();
     mapper.writeValue(writer, request.getParameterMap());

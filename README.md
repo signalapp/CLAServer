@@ -5,6 +5,12 @@ This server is designed for contributors to electronically sign the agreement.
 When pull requests come in, the server sets a status depending on whether or
 not the Github user has signed.
 
+Setting up the Github webhook
+-------------------
+- The payload url should be https://xxx.appspot.com/cla-server/validate
+- The secret should match the key in the database described below
+- Select only the pull request event
+
 Building and deploying
 --------------------
 - To run locally: `mvn app engine:devserver`.  However, you will need to set up an oauth client and redirect, etc to work.
