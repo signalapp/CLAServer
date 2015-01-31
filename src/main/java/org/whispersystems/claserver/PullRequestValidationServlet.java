@@ -76,27 +76,28 @@ public class PullRequestValidationServlet extends HttpServlet {
    */
   protected void doPost(HttpServletRequest request, HttpServletResponse resp) throws ServletException, IOException {
     String eventType = request.getHeader("X-GitHub-Event");
-    if (eventType.equals("ping")) return;
-    String xHubSig = request.getHeader("X-Hub-Signature");
-    StringWriter writer = new StringWriter();
-    mapper.writeValue(writer, request.getParameterMap());
-    String body = CharStreams.toString(request.getReader());
-    GithubPullEvent event = mapper.readValue(mapper.getJsonFactory().createJsonParser(body), GithubPullEvent.class);
+    if (eventType.equals("pull_request")) {
+      String xHubSig = request.getHeader("X-Hub-Signature");
+      StringWriter writer = new StringWriter();
+      mapper.writeValue(writer, request.getParameterMap());
+      String body = CharStreams.toString(request.getReader());
+      GithubPullEvent event = mapper.readValue(mapper.getJsonFactory().createJsonParser(body), GithubPullEvent.class);
 
-    try {
-      Mac mac = Mac.getInstance("HmacSHA1");
-      SecretKeySpec secret = new SecretKeySpec(config.githubSecret.getBytes("UTF-8"), "HmacSHA1");
-      mac.init(secret);
-      byte[] digest = mac.doFinal(body.getBytes());
-      String hmac = String.format("sha1=%s", Hex.encodeHexString(digest));
+      try {
+        Mac mac = Mac.getInstance("HmacSHA1");
+        SecretKeySpec secret = new SecretKeySpec(config.githubSecret.getBytes("UTF-8"), "HmacSHA1");
+        mac.init(secret);
+        byte[] digest = mac.doFinal(body.getBytes());
+        String hmac = String.format("sha1=%s", Hex.encodeHexString(digest));
 
-      if (MessageDigest.isEqual(hmac.getBytes(), xHubSig.getBytes())) {
-        updateStatus(config, event.pull_request);
-      } else {
-        logger.warning("Invalid request signature");
+        if (MessageDigest.isEqual(hmac.getBytes(), xHubSig.getBytes())) {
+          updateStatus(config, event.pull_request);
+        } else {
+          logger.warning("Invalid request signature");
+        }
+      } catch (NoSuchAlgorithmException | InvalidKeyException e) {
+        e.printStackTrace();
       }
-    } catch (NoSuchAlgorithmException | InvalidKeyException e) {
-      e.printStackTrace();
     }
   }
 
