@@ -21,7 +21,6 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
-import com.google.appengine.repackaged.com.google.common.util.Base64;
 import com.google.appengine.repackaged.org.apache.commons.codec.binary.Hex;
 import com.google.common.io.CharStreams;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -42,6 +41,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
+import org.apache.commons.codec.binary.Base64;
 
 /**
  * This class validates if the owner of a pull request has signed the CLA and updates the github status accordingly.
@@ -75,26 +75,29 @@ public class PullRequestValidationServlet extends HttpServlet {
    * This is the endpoint for the github webhook
    */
   protected void doPost(HttpServletRequest request, HttpServletResponse resp) throws ServletException, IOException {
-    String xHubSig = request.getHeader("X-Hub-Signature");
-    StringWriter writer = new StringWriter();
-    mapper.writeValue(writer, request.getParameterMap());
-    String body = CharStreams.toString(request.getReader());
-    GithubPullEvent event = mapper.readValue(mapper.getJsonFactory().createJsonParser(body), GithubPullEvent.class);
+    String eventType = request.getHeader("X-GitHub-Event");
+    if (eventType.equals("pull_request")) {
+      String xHubSig = request.getHeader("X-Hub-Signature");
+      StringWriter writer = new StringWriter();
+      mapper.writeValue(writer, request.getParameterMap());
+      String body = CharStreams.toString(request.getReader());
+      GithubPullEvent event = mapper.readValue(mapper.getJsonFactory().createJsonParser(body), GithubPullEvent.class);
 
-    try {
-      Mac mac = Mac.getInstance("HmacSHA1");
-      SecretKeySpec secret = new SecretKeySpec(config.githubSecret.getBytes("UTF-8"), "HmacSHA1");
-      mac.init(secret);
-      byte[] digest = mac.doFinal(body.getBytes());
-      String hmac = String.format("sha1=%s", Hex.encodeHexString(digest));
+      try {
+        Mac mac = Mac.getInstance("HmacSHA1");
+        SecretKeySpec secret = new SecretKeySpec(config.githubSecret.getBytes("UTF-8"), "HmacSHA1");
+        mac.init(secret);
+        byte[] digest = mac.doFinal(body.getBytes());
+        String hmac = String.format("sha1=%s", Hex.encodeHexString(digest));
 
-      if (MessageDigest.isEqual(hmac.getBytes(), xHubSig.getBytes())) {
-        updateStatus(config, event.pull_request);
-      } else {
-        logger.warning("Invalid request signature");
+        if (MessageDigest.isEqual(hmac.getBytes(), xHubSig.getBytes())) {
+          updateStatus(config, event.pull_request);
+        } else {
+          logger.warning("Invalid request signature");
+        }
+      } catch (NoSuchAlgorithmException | InvalidKeyException e) {
+        e.printStackTrace();
       }
-    } catch (NoSuchAlgorithmException | InvalidKeyException e) {
-      e.printStackTrace();
     }
   }
 
@@ -112,7 +115,7 @@ public class PullRequestValidationServlet extends HttpServlet {
   private Map<String, String> getAuthorization(Config keyStore) {
     Map<String, String> headers = new HashMap<>();
     byte[] authBytes = String.format("%s:x-oauth-basic", keyStore.githubUserToken).getBytes();
-    String basicAuth = "Basic " + Base64.encode(authBytes, 0, authBytes.length, Base64.getAlphabet(), false);
+    String basicAuth = "Basic " +  Base64.encodeBase64String(authBytes);;
     headers.put("Authorization", basicAuth);
     return headers;
   }
