@@ -21,7 +21,6 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
-import com.google.appengine.repackaged.com.google.common.util.Base64;
 import com.google.appengine.repackaged.org.apache.commons.codec.binary.Hex;
 import com.google.common.io.CharStreams;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -42,6 +41,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
+import org.apache.commons.codec.binary.Base64;
 
 /**
  * This class validates if the owner of a pull request has signed the CLA and updates the github status accordingly.
@@ -115,7 +115,7 @@ public class PullRequestValidationServlet extends HttpServlet {
   private Map<String, String> getAuthorization(Config keyStore) {
     Map<String, String> headers = new HashMap<>();
     byte[] authBytes = String.format("%s:x-oauth-basic", keyStore.githubUserToken).getBytes();
-    String basicAuth = "Basic " + Base64.encode(authBytes, 0, authBytes.length, Base64.getAlphabet(), false);
+    String basicAuth = "Basic " +  Base64.encodeBase64String(authBytes);;
     headers.put("Authorization", basicAuth);
     return headers;
   }
