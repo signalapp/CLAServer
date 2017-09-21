@@ -22,7 +22,7 @@ In development, you can populate the keys in `development.json`.
 
 In production, you need to set the keys in the database as following:
 
-There are a few keys that need to be set in the database.  They can be set using the [google developer console] (https://console.developers.google.com/). The entity name is "Secrets" and each of the following has a single property named "key".
+There are a few keys that need to be set in the database.  They can be set using the [google developer console] (https://console.developers.google.com/). The entity name is "Secrets" and each of the following has a single property named "key".  In addition, the CORS headers are set using the whispersystems-url here.
 - *github-webhook-secret* - the secret to validate requests coming in from the webhook
 - *github-user-token* - the token for the github user that updates the status of the pull request
 - *github-oauth-client-id* - the github oauth client id
