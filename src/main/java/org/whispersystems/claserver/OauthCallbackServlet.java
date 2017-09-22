@@ -73,7 +73,7 @@ public class OauthCallbackServlet extends HttpServlet {
             if (urlParam != null && !urlParam.equals("null")) {
               resp.sendRedirect(config.baseUrl + "/validate?redirect_url=" + urlParam);
             } else {
-              resp.sendRedirect(config.whisperSystemsUrl + "/cla/success.html");
+              resp.sendRedirect(config.whisperSystemsUrl + "/cla/success/");
             }
           } catch (EntityNotFoundException e) {
             e.printStackTrace();
